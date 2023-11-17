@@ -1,283 +1,211 @@
-// The title of the game to be displayed on the title screen
-title = "CHARGE RUSH";
+title = "Enlightenment";
 
-// The description, which is also displayed on the title screen
 description = `
-Destroy enemies.
+[Tap] up
 `;
 
-// The array of custom sprites
 characters = [
-`
+  `
+  llll
+ lll
+lll
+lll
+ lll
+  llll
+`,
+  `
+  lll
+ lllll
+lll
+lll
+ lllll
+  lll
+`,
+  `
   ll
+ llll
+llllll
+llllll
+ llll
   ll
-ccllcc
-ccllcc
-ccllcc
-cc  cc
-`,`
-rr  rr
-rrrrrr
-rrpprr
-rrrrrr
-  rr
-  rr
-`,`
-y  y
-yyyyyy
- y  y
-yyyyyy
- y  y
-`
+`,
+  `
+ll  ll
+llllll
+ll  ll
+`,
+  `
+ll  ll
+llllll
+ll  ll
+`,
+  `
+ll
+ll
+`,
+  `
+ lll
+lll l
+l lll
+ lll
+`,
+  `
+ lll 
+  l
+  l
+  l
+lllll
+lllll
+`,
 ];
 
-// Game design variable container
-const G = {
-	WIDTH: 100,
-	HEIGHT: 150,
-
-    STAR_SPEED_MIN: 0.5,
-	STAR_SPEED_MAX: 1.0,
-    
-    PLAYER_FIRE_RATE: 4,
-    PLAYER_GUN_OFFSET: 3,
-
-    FBULLET_SPEED: 5,
-
-    ENEMY_MIN_BASE_SPEED: 1.0,
-    ENEMY_MAX_BASE_SPEED: 2.0,
-    ENEMY_FIRE_RATE: 45,
-
-    EBULLET_SPEED: 2.0,
-    EBULLET_ROTATION_SPD: 0.1
-};
-
-// Game runtime options
-// Refer to the official documentation for all available options
 options = {
-	viewSize: {x: G.WIDTH, y: G.HEIGHT},
-    isCapturing: true,
-    isCapturingGameCanvasOnly: true,
-    captureCanvasScale: 2,
-    seed: 1,
-    isPlayingBgm: true,
-    isReplayEnabled: true,
-    theme: "dark"
+  theme: "dark",
+  viewSize: { x: 100, y: 50 },
+  isPlayingBgm: true,
+  isReplayEnabled: true,
+  seed: 9,
 };
 
-// JSDoc comments for typing
-/**
- * @typedef {{
- * pos: Vector,
- * speed: number
- * }} Star
- */
-
-/**
- * @type { Star [] }
- */
-let stars;
-
-/**
- * @typedef {{
- * pos: Vector,
- * firingCooldown: number,
- * isFiringLeft: boolean
- * }} Player
- */
-
-/**
- * @type { Player }
- */
+/** @type {{x: number, vx: number}} */
 let player;
+/** @type {{x: number, eyeVx: number}} */
+let enemy;
+/** @type {{x: number, isPower: boolean}[]} */
+//let dots;
+let powerTicks;
+let animTicks;
+let ypos;
+let speed1;
+let speed2;
+let speed3;
+let foodx;
+let exerx;
+let foody;
+let exery;
+let gamex;
+let gamey;
+let get;
 
-/**
- * @typedef {{
- * pos: Vector
- * }} FBullet
- */
 
-/**
- * @type { FBullet [] }
- */
-let fBullets;
-
-/**
- * @typedef {{
- * pos: Vector,
- * firingCooldown: number
- * }} Enemy
- */
-
-/**
- * @type { Enemy [] }
- */
-let enemies;
-
-/**
- * @typedef {{
- * pos: Vector,
- * angle: number,
- * rotation: number
- * }} EBullet
- */
-
-/**
- * @type { EBullet [] }
- */
-let eBullets;
-
-/**
- * @type { number }
- */
-let currentEnemySpeed;
-
-/**
- * @type { number }
- */
-let waveCount;
-
-/**
- * 
- */
-
-// The game loop function
 function update() {
-    // The init function running at startup
-	if (!ticks) {
-		stars = times(20, () => {
-            const posX = rnd(0, G.WIDTH);
-            const posY = rnd(0, G.HEIGHT);
-            return {
-                pos: vec(posX, posY),
-                speed: rnd(G.STAR_SPEED_MIN, G.STAR_SPEED_MAX)
-            };
-        });
-
-        player = {
-            pos: vec(G.WIDTH * 0.5, G.HEIGHT * 0.5),
-            firingCooldown: G.PLAYER_FIRE_RATE,
-            isFiringLeft: true
-        };
-
-        fBullets = [];
-        enemies = [];
-        eBullets = [];
-
-        waveCount = 0;
-	}
-
-    // Spawning enemies
-    if (enemies.length === 0) {
-        currentEnemySpeed =
-            rnd(G.ENEMY_MIN_BASE_SPEED, G.ENEMY_MAX_BASE_SPEED) * difficulty;
-        for (let i = 0; i < 9; i++) {
-            const posX = rnd(0, G.WIDTH);
-            const posY = -rnd(i * G.HEIGHT * 0.1);
-            enemies.push({
-                pos: vec(posX, posY),
-                firingCooldown: G.ENEMY_FIRE_RATE 
-            });
-        }
-
-        waveCount++; // Increase the tracking variable by one
+  if (!ticks) {
+    player = { x: 20, vx: 0 };
+    enemy = { x: 100, eyeVx: 0 };
+    //addDots();
+    ypos=[19,30,41];
+    powerTicks = animTicks = 0;
+    exerx=100
+    foodx=100
+    gamex=100
+    speed1=Math.random()*0.5+0.2
+    speed2=Math.random()*0.5+0.2
+    speed3=Math.random()*0.5+0.2
+    foody=19
+    exery=30
+    gamey=41
+    get=floor(Math.random()*3)
+  }
+  animTicks += difficulty;
+  color("black");
+  if(get==0){
+    text('gains',3,10);
+  }else if(get==1){
+    text('hungry',3,10);
+  }else{
+    text('bored',3,10);
+  }
+  //text('pacman is deadge',0,45);
+  if (input.isJustPressed) {
+    if(player.vx<2){
+        player.vx+=1;
+    }else{
+        player.vx=0
     }
-
-    // Update for Star
-    stars.forEach((s) => {
-        s.pos.y += s.speed;
-        if (s.pos.y > G.HEIGHT) s.pos.y = 0;
-        color("light_black");
-        box(s.pos, 1);
-    });
-
-    // Updating and drawing the player
-    player.pos = vec(input.pos.x, input.pos.y);
-    player.pos.clamp(0, G.WIDTH, 0, G.HEIGHT);
-    player.firingCooldown--;
-    if (player.firingCooldown <= 0) {
-        const offset = (player.isFiringLeft)
-            ? -G.PLAYER_GUN_OFFSET
-            : G.PLAYER_GUN_OFFSET;
-        fBullets.push({
-            pos: vec(player.pos.x + offset, player.pos.y)
-        });
-        player.firingCooldown = G.PLAYER_FIRE_RATE;
-        player.isFiringLeft = !player.isFiringLeft;
-
-        color("yellow");
-        particle(
-            player.pos.x + offset, // x coordinate
-            player.pos.y, // y coordinate
-            4, // The number of particles
-            1, // The speed of the particles
-            -PI/2, // The emitting angle
-            PI/4  // The emitting width
-        );
+  }
+  color("blue");
+  rect(0, 14, 100, 1);
+  rect(0, 23, 100, 1);
+  rect(0, 25, 100, 1);
+  rect(0, 34, 100, 1);
+  rect(0, 36, 100, 1);
+  rect(0, 45, 100, 1);
+  color("yellow");
+  const ai = floor(animTicks / 7) % 4;
+  char(addWithCharCode("a", ai === 3 ? 1 : ai), player.x, ypos[player.vx], {
+    // @ts-ignore
+    mirror: { x: player.vx },
+  });
+  exerx-=speed1;
+  foodx-=speed2;
+  gamex-=speed3;
+  if(exerx<0){
+    exerx=100;
+    speed1=Math.random()*0.5+0.2
+    exery=floor(Math.random()*3)
+    exery=ypos[exery]
+  }
+  if(foodx<0){
+  foodx=100
+  speed2=Math.random()*0.5+0.2
+  foody=floor(Math.random()*3)
+  foody=ypos[foody]
+  }
+  if(gamex<0){
+    gamex=100
+    speed3=Math.random()*0.5+0.2
+    gamey=floor(Math.random()*3)
+    gamey=ypos[gamey]
+  }
+  
+  color(
+    "red"
+  );
+  const c = char(
+    addWithCharCode("d", 1),
+    exerx,
+    exery
+  ).isColliding.char;
+  color("red");
+  const d = char(
+    addWithCharCode("f",1),
+    foodx,
+    foody
+  ).isColliding.char;
+  color("green")
+  const e = char(
+    addWithCharCode("g",1),
+    gamex,
+    gamey
+  ).isColliding.char;
+  if (enemy.eyeVx === 0 && (c.a || c.b || c.c)) {
+      if(get!=0){
+      play("explosion");
+      end();
+      }else{
+        exerx=-100
+        get=floor(Math.random()*3)
+        addScore(1);
+      }
+  }
+  if (enemy.eyeVx === 0 && (d.a || d.b || d.c)) {
+    if(get!=1){
+    play("explosion");
+    end();
+    }else{
+        foodx=-100
+        get=floor(Math.random()*3)
+        addScore(1);
+      }
+}
+if (enemy.eyeVx === 0 && (e.a || e.b || e.c)) {
+    if(get!=2){
+    play("explosion");
+    end();
+    }else{
+        gamex=-100
+        get=floor(Math.random()*3)
+        addScore(1);
     }
-    color ("black");
-    char("a", player.pos);
-
-    fBullets.forEach((fb) => {
-        fb.pos.y -= G.FBULLET_SPEED;
-        color("yellow");
-        box(fb.pos, 2);
-    });
-
-
-    remove(enemies, (e) => {
-        e.pos.y += currentEnemySpeed;
-        e.firingCooldown--;
-        if (e.firingCooldown <= 0) {
-            eBullets.push({
-                pos: vec(e.pos.x, e.pos.y),
-                angle: e.pos.angleTo(player.pos),
-                rotation: rnd()
-            });
-            e.firingCooldown = G.ENEMY_FIRE_RATE;
-            play("select");
-        }
-
-        color("black");
-        const isCollidingWithFBullets = char("b", e.pos).isColliding.rect.yellow;
-        const isCollidingWithPlayer = char("b", e.pos).isColliding.char.a;
-        if (isCollidingWithPlayer) {
-            end();
-            play("powerUp");
-        }
-        
-        if (isCollidingWithFBullets) {
-            color("yellow");
-            particle(e.pos);
-            play("explosion");
-            addScore(10 * waveCount, e.pos);
-        }
-        
-        return (isCollidingWithFBullets || e.pos.y > G.HEIGHT);
-    });
-
-    remove(fBullets, (fb) => {
-        color("yellow");
-        const isCollidingWithEnemies = box(fb.pos, 2).isColliding.char.b;
-        return (isCollidingWithEnemies || fb.pos.y < 0);
-    });
-
-    remove(eBullets, (eb) => {
-        eb.pos.x += G.EBULLET_SPEED * Math.cos(eb.angle);
-        eb.pos.y += G.EBULLET_SPEED * Math.sin(eb.angle);
-        eb.rotation += G.EBULLET_ROTATION_SPD;
-
-        color("red");
-        const isCollidingWithPlayer
-            = char("c", eb.pos, {rotation: eb.rotation}).isColliding.char.a;
-        if (isCollidingWithPlayer) {
-            end();
-            play("powerUp");
-        }
-        const isCollidingWithFBullets
-            = char("c", eb.pos, {rotation: eb.rotation}).isColliding.rect.yellow;
-        if (isCollidingWithFBullets) addScore(1, eb.pos);
-        
-        return (!eb.pos.isInRect(0, 0, G.WIDTH, G.HEIGHT));
-    });
+}
 }
