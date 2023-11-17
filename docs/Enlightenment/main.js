@@ -50,12 +50,12 @@ l lll
  lll
 `,
   `
- lll 
-  l
-  l
-  l
-lllll
-lllll
+ l   l
+  lll 
+ l l l
+ lllll
+ l   l
+  l l
 `,
 ];
 
@@ -107,13 +107,15 @@ function update() {
     get=floor(Math.random()*3)
   }
   animTicks += difficulty;
-  color("black");
   if(get==0){
-    text('gains',3,10);
+    color("black");
+    text('gains',68,10);
   }else if(get==1){
-    text('hungry',3,10);
+    color("red");
+    text('hungry',68,10);
   }else{
-    text('bored',3,10);
+    color("green");
+    text('bored',68,10);
   }
   //text('pacman is deadge',0,45);
   if (input.isJustPressed) {
@@ -159,7 +161,7 @@ function update() {
   }
   
   color(
-    "red"
+    "black"
   );
   const c = char(
     addWithCharCode("d", 1),
@@ -172,6 +174,7 @@ function update() {
     foodx,
     foody
   ).isColliding.char;
+  color("green");
   const e = char(
     addWithCharCode("g",1),
     gamex,
