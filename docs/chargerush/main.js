@@ -62,7 +62,7 @@ lllll
 options = {
   theme: "dark",
   viewSize: { x: 100, y: 50 },
-  isPlayingBgm: true,
+  isPlayingBgm: false,
   isReplayEnabled: true,
   seed: 9,
 };
@@ -172,7 +172,6 @@ function update() {
     foodx,
     foody
   ).isColliding.char;
-  color("green")
   const e = char(
     addWithCharCode("g",1),
     gamex,
